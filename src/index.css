@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #e5edf8;
+  background: #05070d;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(38, 217, 255, 0.16), transparent 34rem),
+    radial-gradient(circle at 84% 8%, rgba(87, 242, 183, 0.11), transparent 28rem),
+    linear-gradient(180deg, #05070d 0%, #09111d 45%, #05070d 100%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.section-shell {
+  @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8;
+}
+
+.glass {
+  @apply border border-white/10 bg-white/[0.055] shadow-2xl shadow-black/25 backdrop-blur-xl;
+}
+
+.card-hover {
+  @apply transition duration-300 hover:-translate-y-1 hover:border-cyan/30 hover:bg-white/[0.075];
+}
+
+.eyebrow {
+  @apply text-xs font-semibold uppercase tracking-[0.26em] text-cyan;
+}
+
+.warehouse-grid {
+  background-image:
+    linear-gradient(rgba(38, 217, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(38, 217, 255, 0.1) 1px, transparent 1px);
+  background-size: 28px 28px;
+  transform: perspective(700px) rotateX(58deg) rotateZ(-8deg);
+}
+
+.scan-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  height: 44%;
+  background: linear-gradient(180deg, transparent, rgba(38, 217, 255, 0.22), transparent);
+  animation: scan 4.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
