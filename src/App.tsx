@@ -26,8 +26,10 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
+import warehouseDemo from "./assets/warehouse-cctv-twin-demo.png";
 
 const cameraFeeds = ["Dock 02", "Aisle B", "Cold Zone", "Packing"];
+const cameraCrops = ["0% 0%", "100% 0%", "100% 100%", "0% 0%"];
 const rackLabels = ["A-12", "B-03", "C-08", "D-14", "E-02", "F-21", "G-09", "H-18"];
 
 const conversionSteps = [
@@ -214,8 +216,15 @@ function CameraCard({ feed, index }: { feed: string; index: number }) {
         <span className="font-semibold text-slate-200">CAM {index + 1}</span>
         <span className="rounded-full bg-red-400/15 px-2 py-0.5 text-red-200">REC</span>
       </div>
-      <div className="camera-feed mt-3 h-24 rounded-lg border border-cyan/15 bg-[#08121d]">
-        <div className="h-full w-full bg-[linear-gradient(115deg,transparent_20%,rgba(38,217,255,0.14)_48%,transparent_70%)]" />
+      <div className="camera-feed relative mt-3 h-24 overflow-hidden rounded-lg border border-cyan/15 bg-[#08121d]">
+        <img
+          src={warehouseDemo}
+          alt={`${feed} CCTV warehouse preview`}
+          className="h-full w-full object-cover opacity-90 saturate-125"
+          style={{ objectPosition: cameraCrops[index % cameraCrops.length] }}
+        />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,transparent_20%,rgba(38,217,255,0.16)_48%,transparent_70%)]" />
+        <div className="pointer-events-none absolute inset-0 border border-cyan/10" />
       </div>
       <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
         <span>{feed}</span>
@@ -228,6 +237,13 @@ function CameraCard({ feed, index }: { feed: string; index: number }) {
 function TwinCanvas({ compact = false, highlight = "B-03" }: { compact?: boolean; highlight?: string }) {
   return (
     <div className={`relative overflow-hidden rounded-xl border border-cyan/20 bg-[#07111c] ${compact ? "min-h-[460px] p-5" : "min-h-[560px] p-6"} scan-line`}>
+      <img
+        src={warehouseDemo}
+        alt="Generated 3D warehouse digital twin map"
+        className="absolute inset-0 h-full w-full object-cover opacity-35 mix-blend-screen saturate-150"
+        style={{ objectPosition: "0% 100%" }}
+      />
+      <div className="absolute inset-0 bg-[#07111c]/55" />
       <div className="warehouse-grid absolute inset-x-0 bottom-0 h-[78%] origin-bottom opacity-90" />
       <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
         <span className="rounded-full border border-cyan/35 bg-cyan/10 px-3 py-1 text-xs font-semibold text-cyan">3D Twin Viewer</span>
@@ -324,10 +340,15 @@ function MiniMap() {
         <p className="font-semibold text-white">Mini Map</p>
         <Map size={18} className="text-cyan" />
       </div>
-      <div className="grid h-32 grid-cols-5 gap-1 rounded-lg border border-cyan/15 bg-ink/60 p-2">
-        {Array.from({ length: 20 }).map((_, index) => (
-          <div key={index} className={`rounded-sm ${index === 7 ? "bg-cyan shadow-[0_0_18px_rgba(38,217,255,0.55)]" : "bg-white/10"}`} />
-        ))}
+      <div className="relative h-32 overflow-hidden rounded-lg border border-cyan/15 bg-ink/60">
+        <img
+          src={warehouseDemo}
+          alt="Mini map of generated warehouse twin"
+          className="h-full w-full object-cover opacity-75 saturate-150"
+          style={{ objectPosition: "0% 100%" }}
+        />
+        <div className="absolute inset-0 bg-cyan/5" />
+        <div className="absolute left-[36%] top-[42%] h-4 w-4 rounded-full border-2 border-cyan bg-cyan/30 shadow-[0_0_18px_rgba(38,217,255,0.75)]" />
       </div>
       <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
         <span className="h-2 w-2 rounded-full bg-cyan" /> Current view: Aisle B
@@ -370,13 +391,18 @@ function ConversionFlow() {
 function StepVisual({ type }: { type: string }) {
   if (type === "camera") {
     return (
-      <div className="camera-feed h-44 rounded-xl border border-cyan/15 bg-[#07111c] p-3">
-        <div className="flex justify-between text-xs text-slate-400">
+      <div className="camera-feed relative h-44 overflow-hidden rounded-xl border border-cyan/15 bg-[#07111c] p-3">
+        <img
+          src={warehouseDemo}
+          alt="Generated CCTV warehouse aisle"
+          className="absolute inset-0 h-full w-full object-cover opacity-85"
+          style={{ objectPosition: "100% 0%" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/40 via-transparent to-ink/60" />
+        <div className="relative flex justify-between text-xs text-slate-300">
           <span>CAM / Aisle B</span>
           <span className="text-red-200">REC</span>
         </div>
-        <div className="mt-16 h-2 rounded-full bg-cyan/50" />
-        <div className="mt-3 h-2 w-2/3 rounded-full bg-mint/40" />
       </div>
     );
   }
@@ -384,9 +410,21 @@ function StepVisual({ type }: { type: string }) {
   if (type === "reconstruct") {
     return (
       <div className="relative h-44 overflow-hidden rounded-xl border border-cyan/15 bg-[#07111c] p-4">
-        <div className="absolute left-4 top-8 h-24 w-28 rounded-lg border border-white/10 bg-slate-900" />
+        <img
+          src={warehouseDemo}
+          alt="Generated CCTV footage transforming into 3D warehouse"
+          className="absolute left-0 top-0 h-full w-1/2 object-cover opacity-75"
+          style={{ objectPosition: "0% 0%" }}
+        />
+        <div className="absolute left-0 top-0 h-full w-1/2 bg-ink/25" />
         <ArrowRight className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-cyan" size={24} />
-        <div className="warehouse-grid absolute bottom-0 right-0 h-36 w-44 origin-bottom opacity-80" />
+        <img
+          src={warehouseDemo}
+          alt="Generated 3D warehouse model"
+          className="absolute bottom-0 right-0 h-full w-1/2 object-cover opacity-80"
+          style={{ objectPosition: "0% 100%" }}
+        />
+        <div className="warehouse-grid absolute bottom-0 right-0 h-36 w-44 origin-bottom opacity-45" />
         <span className="absolute bottom-4 right-4 rounded-full bg-mint/10 px-3 py-1 text-xs text-mint">3D model</span>
       </div>
     );
@@ -394,6 +432,13 @@ function StepVisual({ type }: { type: string }) {
 
   return (
     <div className="relative h-44 overflow-hidden rounded-xl border border-cyan/15 bg-[#07111c] p-4">
+      <img
+        src={warehouseDemo}
+        alt="Generated rack inspection preview"
+        className="absolute inset-0 h-full w-full object-cover opacity-70"
+        style={{ objectPosition: "100% 100%" }}
+      />
+      <div className="absolute inset-0 bg-ink/45" />
       <div className="warehouse-grid absolute inset-x-0 bottom-0 h-36 origin-bottom opacity-80" />
       <div className="relative grid grid-cols-3 gap-2">
         {["A-12", "B-03", "C-08"].map((rack) => (
