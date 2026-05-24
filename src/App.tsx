@@ -2,113 +2,101 @@ import {
   Activity,
   AlertTriangle,
   ArrowRight,
-  BarChart3,
   Boxes,
   Camera,
   Check,
   ChevronRight,
   CloudCog,
-  Factory,
-  Gauge,
+  Crosshair,
+  Eye,
+  Layers3,
+  LocateFixed,
   Map,
-  MapPinned,
+  Maximize2,
+  MousePointer2,
   PackageCheck,
   QrCode,
+  RotateCcw,
   Route,
-  ScanSearch,
+  ScanLine,
+  Search,
   ShieldCheck,
   Smartphone,
-  Timer,
   Warehouse,
-  Zap,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 
-const problems = [
-  "Inventory mismatch between WMS/ERP and actual racks",
-  "CCTV used only for passive monitoring",
-  "Inefficient picking routes",
-  "Delayed decisions from limited real-time visibility",
-];
+const cameraFeeds = ["Dock 02", "Aisle B", "Cold Zone", "Packing"];
+const rackLabels = ["A-12", "B-03", "C-08", "D-14", "E-02", "F-21", "G-09", "H-18"];
 
-const workflow = [
-  { icon: Camera, title: "Existing CCTV / IoT Cameras", text: "Connect live feeds without replacing the camera layer." },
-  { icon: Warehouse, title: "3D Digital Twin", text: "Reconstruct warehouse zones, aisles, racks, and activity." },
-  { icon: ScanSearch, title: "AI Inventory Analysis", text: "Detect rack status, inventory gaps, SKUs, and anomalies." },
-  { icon: Route, title: "Operational Optimization", text: "Guide picking, surface bottlenecks, and improve space use." },
-];
-
-const tech = [
+const conversionSteps = [
   {
-    icon: Map,
-    title: "Gaussian Splatting",
-    text: "Converts 2D camera imagery into a live 3D warehouse twin for spatial awareness.",
+    step: "Step 1",
+    title: "Capture",
+    icon: Camera,
+    text: "Existing CCTV and IoT cameras collect warehouse footage.",
+    visual: "camera",
   },
   {
-    icon: Boxes,
+    step: "Step 2",
+    title: "Reconstruct",
+    icon: Layers3,
+    text: "Gaussian Splatting converts 2D footage into a 3D spatial model.",
+    visual: "reconstruct",
+  },
+  {
+    step: "Step 3",
+    title: "Navigate & Manage",
+    icon: MousePointer2,
+    text: "Teams move through aisles, inspect racks, and check inventory overlays.",
+    visual: "navigate",
+  },
+];
+
+const overlays = [
+  { label: "Empty Rack", color: "border-red-400/50 bg-red-400/10 text-red-200" },
+  { label: "Overstock", color: "border-amber/50 bg-amber/10 text-amber" },
+  { label: "Missing Item", color: "border-red-400/50 bg-red-400/10 text-red-200" },
+  { label: "Pick Route", color: "border-cyan/50 bg-cyan/10 text-cyan" },
+];
+
+const scenario = [
+  "WMS mismatch",
+  "Open TwinFlow",
+  "Navigate to B-03",
+  "AI detects issue",
+  "Worker app updated",
+];
+
+const technology = [
+  {
+    icon: Layers3,
+    title: "Gaussian Splatting",
+    text: "Builds the 3D warehouse from CCTV images.",
+  },
+  {
+    icon: ScanLine,
     title: "YOLO Object Detection",
-    text: "Detects inventory, rack occupancy, movement, and abnormal stock conditions.",
+    text: "Detects boxes, racks, and empty spaces.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Edge Processing",
+    text: "Processes video locally for speed and security.",
   },
   {
     icon: CloudCog,
-    title: "Edge-first SaaS",
-    text: "Processes video locally and syncs only operational insights to the cloud.",
+    title: "Cloud Dashboard",
+    text: "Syncs insights, alerts, and KPIs.",
   },
 ];
-
-const benefits = ["Lower network costs", "Reduced server computation", "Real-time response", "Better data security"];
 
 const metrics = [
   { value: "15%", label: "faster picking" },
   { value: "20%", label: "higher inventory accuracy" },
   { value: "10%", label: "better space utilization" },
-  { value: "Lower", label: "labor cost" },
-  { value: "Fewer", label: "shipping errors" },
-];
-
-const prices = [
-  {
-    name: "Starter",
-    segment: "Small Warehouse",
-    size: "Up to 300 pyeong",
-    price: "₩1.49M",
-    setup: "₩5M setup",
-    features: ["Basic 3D dashboard", "CCTV inventory visibility"],
-  },
-  {
-    name: "Pro",
-    segment: "Medium Warehouse",
-    size: "300-1,000 pyeong",
-    price: "₩2.99M",
-    setup: "₩10M setup",
-    featured: true,
-    features: ["Picking optimization", "Bottleneck detection", "QR/SKU matching", "WMS/ERP integration"],
-  },
-  {
-    name: "Enterprise",
-    segment: "Multi-site Operations",
-    size: "1,000+ pyeong",
-    price: "Custom",
-    setup: "Custom quote",
-    features: ["Multi-warehouse dashboard", "Advanced analytics", "Private edge deployment", "Dedicated support"],
-  },
-];
-
-const roadmap = [
-  {
-    step: "Step 1",
-    title: "PoC",
-    items: ["Select one mid-sized 3PL warehouse", "Connect existing CCTV", "Generate 3D twin", "Validate inventory accuracy"],
-  },
-  {
-    step: "Step 2",
-    title: "SaaS Dashboard",
-    items: ["Manager 3D dashboard", "Worker picking app", "KPI reporting"],
-  },
-  {
-    step: "Step 3",
-    title: "Scale-up",
-    items: ["Franchise logistics", "Food distribution", "Fashion/cosmetics fulfillment", "Manufacturing warehouses"],
-  },
+  { value: "Lower", label: "on-site inspection time" },
 ];
 
 function App() {
@@ -116,13 +104,12 @@ function App() {
     <main className="min-h-screen overflow-hidden text-slate-100">
       <Header />
       <Hero />
-      <Problem />
-      <Solution />
+      <ConversionFlow />
+      <TwinViewerSection />
+      <Scenario />
       <Technology />
-      <ProductUI />
+      <Interfaces />
       <BusinessValue />
-      <Pricing />
-      <Roadmap />
       <FinalCTA />
     </main>
   );
@@ -139,12 +126,12 @@ function Header() {
           <span className="text-lg font-semibold tracking-wide">TwinFlow</span>
         </a>
         <div className="hidden items-center gap-7 text-sm text-slate-300 md:flex">
-          <a href="#solution" className="hover:text-white">Solution</a>
-          <a href="#product" className="hover:text-white">Product</a>
-          <a href="#pricing" className="hover:text-white">Pricing</a>
+          <a href="#flow" className="hover:text-white">Conversion</a>
+          <a href="#viewer" className="hover:text-white">3D Twin</a>
+          <a href="#interfaces" className="hover:text-white">Interfaces</a>
         </div>
-        <a href="#demo" className="rounded-lg bg-cyan px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white">
-          Request a Demo
+        <a href="#viewer" className="rounded-lg bg-cyan px-4 py-2 text-sm font-semibold text-ink transition hover:bg-white">
+          Explore Twin
         </a>
       </nav>
     </header>
@@ -153,112 +140,197 @@ function Header() {
 
 function Hero() {
   return (
-    <section className="section-shell grid min-h-screen items-center gap-12 pb-20 pt-28 lg:grid-cols-[0.92fr_1.08fr]">
+    <section className="section-shell grid min-h-screen items-center gap-10 pb-16 pt-28 lg:grid-cols-[0.82fr_1.18fr]">
       <div className="animate-reveal">
-        <p className="eyebrow">TwinFlow</p>
+        <p className="eyebrow">CCTV-to-3D Twin Demo</p>
         <h1 className="mt-5 max-w-4xl text-4xl font-semibold leading-[1.05] tracking-normal text-white sm:text-6xl lg:text-7xl">
-          Turn Warehouse CCTV into Real-Time Operational Intelligence
+          Turn CCTV Footage into a Walkable 3D Warehouse Twin
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
-          AI-powered digital twin SaaS for smarter inventory, faster picking, and lower warehouse operating costs.
+          TwinFlow converts existing warehouse cameras into a real-time digital twin, allowing teams to inspect racks,
+          inventory, and warehouse flow from a virtual control room.
         </p>
         <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-          <a href="#demo" className="inline-flex items-center justify-center gap-2 rounded-lg bg-cyan px-6 py-3 font-semibold text-ink transition hover:bg-white">
-            Request a Demo <ChevronRight size={18} />
+          <a href="#viewer" className="inline-flex items-center justify-center gap-2 rounded-lg bg-cyan px-6 py-3 font-semibold text-ink transition hover:bg-white">
+            Explore the 3D Twin <ChevronRight size={18} />
           </a>
-          <a href="#solution" className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-6 py-3 font-semibold text-white transition hover:border-mint/40 hover:bg-white/10">
-            See How It Works <ArrowRight size={18} />
+          <a href="#flow" className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 px-6 py-3 font-semibold text-white transition hover:border-mint/40 hover:bg-white/10">
+            View CCTV Conversion Flow <ArrowRight size={18} />
           </a>
         </div>
         <div className="mt-10 grid max-w-xl grid-cols-3 gap-3 text-sm text-slate-300">
-          {["3PL", "Fulfillment", "Distribution"].map((item) => (
+          {["Live CCTV", "3D Spatial Map", "Rack Intelligence"].map((item) => (
             <div key={item} className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-3 text-center">
               {item}
             </div>
           ))}
         </div>
       </div>
-      <HeroVisual />
+      <HeroDemo />
     </section>
   );
 }
 
-function HeroVisual() {
-  const racks = ["A-12", "B-03", "C-08", "D-14", "E-02", "F-21"];
+function HeroDemo() {
+  return (
+    <div className="glass relative overflow-hidden rounded-2xl p-4 shadow-glow">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_28%,rgba(38,217,255,0.2),transparent_35%),linear-gradient(135deg,rgba(87,242,183,0.08),transparent_45%)]" />
+      <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Virtual Control Room</p>
+          <h2 className="mt-1 text-xl font-semibold text-white">Warehouse Twin / Seoul DC-04</h2>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {["Live Twin Generated", "Rack Detected", "Inventory Synced"].map((badge) => (
+            <span key={badge} className="rounded-full border border-mint/35 bg-mint/10 px-3 py-1 text-xs font-semibold text-mint">
+              {badge}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative mt-4 grid gap-4 xl:grid-cols-[0.68fr_1.35fr_0.72fr]">
+        <div className="grid gap-3">
+          {cameraFeeds.slice(0, 3).map((feed, index) => (
+            <CameraCard key={feed} feed={feed} index={index} />
+          ))}
+        </div>
+
+        <TwinCanvas compact highlight="B-03" />
+
+        <div className="grid gap-3">
+          <StatusPanel />
+          <MiniMap />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CameraCard({ feed, index }: { feed: string; index: number }) {
+  return (
+    <div className="relative overflow-hidden rounded-xl border border-white/10 bg-slate-950 p-3">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-semibold text-slate-200">CAM {index + 1}</span>
+        <span className="rounded-full bg-red-400/15 px-2 py-0.5 text-red-200">REC</span>
+      </div>
+      <div className="camera-feed mt-3 h-24 rounded-lg border border-cyan/15 bg-[#08121d]">
+        <div className="h-full w-full bg-[linear-gradient(115deg,transparent_20%,rgba(38,217,255,0.14)_48%,transparent_70%)]" />
+      </div>
+      <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
+        <span>{feed}</span>
+        <span>24 fps</span>
+      </div>
+    </div>
+  );
+}
+
+function TwinCanvas({ compact = false, highlight = "B-03" }: { compact?: boolean; highlight?: string }) {
+  return (
+    <div className={`relative overflow-hidden rounded-xl border border-cyan/20 bg-[#07111c] ${compact ? "min-h-[460px] p-5" : "min-h-[560px] p-6"} scan-line`}>
+      <div className="warehouse-grid absolute inset-x-0 bottom-0 h-[78%] origin-bottom opacity-90" />
+      <div className="absolute left-4 top-4 z-10 flex flex-wrap gap-2">
+        <span className="rounded-full border border-cyan/35 bg-cyan/10 px-3 py-1 text-xs font-semibold text-cyan">3D Twin Viewer</span>
+        <span className="rounded-full border border-mint/35 bg-mint/10 px-3 py-1 text-xs font-semibold text-mint">Walkthrough Mode</span>
+      </div>
+      <div className="absolute right-4 top-4 z-10 rounded-lg border border-white/10 bg-ink/75 p-2 backdrop-blur">
+        <div className="grid grid-cols-2 gap-1">
+          {[ZoomIn, ZoomOut, RotateCcw, Maximize2].map((Icon, index) => (
+            <button key={index} className="grid h-8 w-8 place-items-center rounded-md bg-white/[0.06] text-slate-300 transition hover:bg-cyan/15 hover:text-cyan" aria-label="Viewer control">
+              <Icon size={15} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="relative z-10 mt-16 grid grid-cols-4 gap-3 sm:grid-cols-4">
+        {rackLabels.map((rack, index) => {
+          const isTarget = rack === highlight;
+          const isAlert = rack === "C-08" || rack === "E-02";
+          return (
+            <div
+              key={rack}
+              className={`rack-block group relative min-h-[105px] rounded-lg border p-3 transition duration-300 hover:-translate-y-1 ${
+                isTarget
+                  ? "border-cyan bg-cyan/15 text-cyan shadow-[0_0_35px_rgba(38,217,255,0.35)]"
+                  : isAlert
+                    ? "border-amber/45 bg-amber/10 text-amber"
+                    : "border-mint/30 bg-mint/10 text-mint"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-semibold">{rack}</span>
+                {isTarget && <Crosshair size={16} />}
+              </div>
+              <div className="mt-8 space-y-2">
+                <div className="h-2 rounded-full bg-current opacity-70" />
+                <div className="h-2 w-3/4 rounded-full bg-current opacity-40" />
+              </div>
+              {isTarget && (
+                <div className="absolute -bottom-9 left-1/2 w-44 -translate-x-1/2 rounded-lg border border-cyan/35 bg-ink/90 px-3 py-2 text-center text-xs text-cyan backdrop-blur">
+                  B-03 selected / Empty rack
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="absolute bottom-5 left-5 z-10 rounded-lg border border-cyan/25 bg-ink/75 p-3 backdrop-blur">
+        <p className="text-xs text-slate-400">Pick Route</p>
+        <p className="mt-1 font-semibold text-cyan">Dock → A-12 → B-03 → C-08</p>
+      </div>
+      <div className="absolute bottom-5 right-5 z-10 hidden rounded-lg border border-white/10 bg-ink/75 p-3 text-xs text-slate-300 backdrop-blur sm:block">
+        <div className="mb-2 flex items-center gap-2 text-white"><LocateFixed size={15} className="text-mint" /> Position</div>
+        <div>Aisle B / Rack 03 / Level 2</div>
+      </div>
+    </div>
+  );
+}
+
+function StatusPanel() {
+  const stats = [
+    ["Total SKUs", "4,812"],
+    ["Active racks", "238"],
+    ["Empty racks", "12"],
+    ["Alerts", "5"],
+  ];
 
   return (
-    <div className="relative animate-float">
-      <div className="glass relative min-h-[560px] overflow-hidden rounded-2xl p-4 shadow-glow">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(38,217,255,0.18),transparent_36%),linear-gradient(135deg,rgba(87,242,183,0.08),transparent_35%)]" />
-        <div className="relative flex items-center justify-between border-b border-white/10 pb-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Live Operations Twin</p>
-            <h2 className="mt-1 text-xl font-semibold text-white">Seoul DC-04</h2>
+    <div className="rounded-xl border border-white/10 bg-white/[0.055] p-4">
+      <div className="mb-4 flex items-center justify-between">
+        <p className="font-semibold text-white">Rack Status</p>
+        <PackageCheck className="text-mint" size={18} />
+      </div>
+      <div className="grid gap-3">
+        {stats.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between rounded-lg bg-ink/55 px-3 py-2">
+            <span className="text-xs text-slate-400">{label}</span>
+            <span className="font-semibold text-white">{value}</span>
           </div>
-          <span className="rounded-full border border-mint/40 bg-mint/10 px-3 py-1 text-xs font-semibold text-mint">Live</span>
-        </div>
+        ))}
+      </div>
+      <div className="mt-4 rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-200">
+        Missing item detected at B-03
+      </div>
+    </div>
+  );
+}
 
-        <div className="relative mt-4 grid gap-4 lg:grid-cols-[1fr_0.72fr]">
-          <div className="relative min-h-[380px] overflow-hidden rounded-xl border border-cyan/20 bg-[#07111c] p-5 scan-line">
-            <div className="warehouse-grid absolute inset-x-0 bottom-0 h-[310px] origin-bottom opacity-80" />
-            <div className="relative grid grid-cols-3 gap-3">
-              {racks.map((rack, index) => (
-                <div
-                  key={rack}
-                  className={`rounded-lg border p-3 text-xs ${
-                    index === 2
-                      ? "border-amber/50 bg-amber/10 text-amber"
-                      : index === 4
-                        ? "border-red-400/50 bg-red-400/10 text-red-200"
-                        : "border-mint/35 bg-mint/10 text-mint"
-                  }`}
-                >
-                  <div className="font-semibold">{rack}</div>
-                  <div className="mt-8 h-2 rounded-full bg-current opacity-70" />
-                  <div className="mt-2 h-2 w-2/3 rounded-full bg-current opacity-40" />
-                </div>
-              ))}
-            </div>
-            <div className="absolute bottom-5 left-5 rounded-lg border border-cyan/25 bg-ink/70 p-3 backdrop-blur">
-              <p className="text-xs text-slate-400">Picking route</p>
-              <p className="mt-1 font-semibold text-cyan">A-12 → B-03 → C-08</p>
-            </div>
-          </div>
-
-          <div className="grid gap-4">
-            <div className="rounded-xl border border-white/10 bg-white/[0.055] p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-semibold">AI Alerts</p>
-                <AlertTriangle className="text-amber" size={18} />
-              </div>
-              {["Rack C-08 low stock", "Aisle 4 congestion", "SKU mismatch at B-03"].map((alert) => (
-                <div key={alert} className="mb-2 rounded-lg bg-amber/10 px-3 py-2 text-xs text-amber last:mb-0">
-                  {alert}
-                </div>
-              ))}
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.055] p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
-                <Camera size={17} className="text-cyan" /> Live CCTV
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {[1, 2, 3, 4].map((cam) => (
-                  <div key={cam} className="h-20 rounded-lg border border-white/10 bg-gradient-to-br from-slate-800 to-slate-950 p-2">
-                    <span className="text-[10px] text-slate-400">CAM {cam}</span>
-                    <div className="mt-5 h-1 rounded-full bg-cyan/50" />
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.055] p-4">
-              <p className="text-sm font-semibold">Space Utilization</p>
-              <div className="mt-4 h-2 rounded-full bg-white/10">
-                <div className="h-full w-[78%] rounded-full bg-mint" />
-              </div>
-              <p className="mt-2 text-2xl font-semibold text-white">78%</p>
-            </div>
-          </div>
-        </div>
+function MiniMap() {
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/[0.055] p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <p className="font-semibold text-white">Mini Map</p>
+        <Map size={18} className="text-cyan" />
+      </div>
+      <div className="grid h-32 grid-cols-5 gap-1 rounded-lg border border-cyan/15 bg-ink/60 p-2">
+        {Array.from({ length: 20 }).map((_, index) => (
+          <div key={index} className={`rounded-sm ${index === 7 ? "bg-cyan shadow-[0_0_18px_rgba(38,217,255,0.55)]" : "bg-white/10"}`} />
+        ))}
+      </div>
+      <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
+        <span className="h-2 w-2 rounded-full bg-cyan" /> Current view: Aisle B
       </div>
     </div>
   );
@@ -274,17 +346,20 @@ function SectionHeading({ kicker, title, text }: { kicker?: string; title: strin
   );
 }
 
-function Problem() {
+function ConversionFlow() {
   return (
-    <section className="section-shell py-20">
-      <SectionHeading title="Warehouses still struggle with invisible operations" />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {problems.map((problem, index) => (
-          <div key={problem} className="glass card-hover rounded-xl p-6">
-            <div className="mb-8 flex h-11 w-11 items-center justify-center rounded-lg bg-red-400/10 text-red-300">
-              <span className="font-semibold">0{index + 1}</span>
+    <section id="flow" className="section-shell py-20">
+      <SectionHeading kicker="CCTV Conversion Flow" title="From CCTV to 3D Warehouse in 3 Steps" />
+      <div className="grid gap-5 lg:grid-cols-3">
+        {conversionSteps.map((item) => (
+          <div key={item.title} className="glass card-hover rounded-xl p-6">
+            <div className="mb-6 flex items-center justify-between">
+              <span className="rounded-full bg-cyan/10 px-3 py-1 text-sm font-semibold text-cyan">{item.step}</span>
+              <item.icon className="text-mint" size={26} />
             </div>
-            <h3 className="text-lg font-semibold text-white">{problem}</h3>
+            <StepVisual type={item.visual} />
+            <h3 className="mt-6 text-2xl font-semibold text-white">{item.title}</h3>
+            <p className="mt-3 leading-7 text-slate-300">{item.text}</p>
           </div>
         ))}
       </div>
@@ -292,19 +367,134 @@ function Problem() {
   );
 }
 
-function Solution() {
+function StepVisual({ type }: { type: string }) {
+  if (type === "camera") {
+    return (
+      <div className="camera-feed h-44 rounded-xl border border-cyan/15 bg-[#07111c] p-3">
+        <div className="flex justify-between text-xs text-slate-400">
+          <span>CAM / Aisle B</span>
+          <span className="text-red-200">REC</span>
+        </div>
+        <div className="mt-16 h-2 rounded-full bg-cyan/50" />
+        <div className="mt-3 h-2 w-2/3 rounded-full bg-mint/40" />
+      </div>
+    );
+  }
+
+  if (type === "reconstruct") {
+    return (
+      <div className="relative h-44 overflow-hidden rounded-xl border border-cyan/15 bg-[#07111c] p-4">
+        <div className="absolute left-4 top-8 h-24 w-28 rounded-lg border border-white/10 bg-slate-900" />
+        <ArrowRight className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-cyan" size={24} />
+        <div className="warehouse-grid absolute bottom-0 right-0 h-36 w-44 origin-bottom opacity-80" />
+        <span className="absolute bottom-4 right-4 rounded-full bg-mint/10 px-3 py-1 text-xs text-mint">3D model</span>
+      </div>
+    );
+  }
+
   return (
-    <section id="solution" className="section-shell py-20">
-      <SectionHeading kicker="Workflow" title="TwinFlow converts physical warehouse reality into actionable data" />
-      <div className="grid gap-4 lg:grid-cols-4">
-        {workflow.map((item, index) => (
-          <div key={item.title} className="relative glass card-hover rounded-xl p-6">
-            <item.icon className="mb-8 text-cyan" size={30} />
-            <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-            <p className="mt-3 text-sm leading-6 text-slate-300">{item.text}</p>
-            {index < workflow.length - 1 && <ArrowRight className="absolute -right-3 top-1/2 hidden text-cyan lg:block" size={22} />}
+    <div className="relative h-44 overflow-hidden rounded-xl border border-cyan/15 bg-[#07111c] p-4">
+      <div className="warehouse-grid absolute inset-x-0 bottom-0 h-36 origin-bottom opacity-80" />
+      <div className="relative grid grid-cols-3 gap-2">
+        {["A-12", "B-03", "C-08"].map((rack) => (
+          <div key={rack} className={`rounded-lg border p-3 text-xs ${rack === "B-03" ? "border-cyan bg-cyan/15 text-cyan" : "border-mint/30 bg-mint/10 text-mint"}`}>
+            {rack}
           </div>
         ))}
+      </div>
+      <span className="absolute bottom-4 left-4 rounded-full bg-cyan/10 px-3 py-1 text-xs text-cyan">Navigate aisle</span>
+    </div>
+  );
+}
+
+function TwinViewerSection() {
+  return (
+    <section id="viewer" className="border-y border-white/10 bg-white/[0.025] py-20">
+      <div className="section-shell">
+        <SectionHeading
+          kicker="Interactive Digital Twin Viewer"
+          title="Enter the virtual warehouse before walking the floor"
+          text="A realistic control-room interface for inspecting camera feeds, moving through aisles, and managing live rack intelligence."
+        />
+        <div className="glass overflow-hidden rounded-2xl p-4 lg:p-6">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-5">
+            <div>
+              <p className="text-sm text-slate-400">TwinFlow Viewer</p>
+              <h3 className="text-2xl font-semibold text-white">Warehouse DC-04 / Floor 1</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {["Floor Map", "Aisle Selector", "Rack Search"].map((item) => (
+                <button key={item} className="rounded-lg border border-white/10 bg-white/[0.05] px-3 py-2 text-sm text-slate-200 transition hover:border-cyan/35 hover:text-cyan">
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-[0.76fr_1.55fr_0.8fr]">
+            <div className="grid gap-3">
+              {cameraFeeds.map((feed, index) => (
+                <CameraCard key={feed} feed={feed} index={index} />
+              ))}
+            </div>
+
+            <div>
+              <TwinCanvas highlight="B-03" />
+              <div className="mt-4 grid gap-3 sm:grid-cols-4">
+                {overlays.map((overlay) => (
+                  <div key={overlay.label} className={`rounded-lg border px-3 py-3 text-center text-sm font-semibold ${overlay.color}`}>
+                    {overlay.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid content-start gap-4">
+              <StatusPanel />
+              <div className="rounded-xl border border-white/10 bg-white/[0.055] p-4">
+                <p className="mb-4 font-semibold text-white">Navigation</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[ZoomIn, LocateFixed, ZoomOut, RotateCcw, Eye, Search].map((Icon, index) => (
+                    <button key={index} className="grid h-12 place-items-center rounded-lg border border-white/10 bg-ink/60 text-slate-300 transition hover:border-cyan/35 hover:text-cyan" aria-label="Navigation control">
+                      <Icon size={18} />
+                    </button>
+                  ))}
+                </div>
+                <div className="mt-4 rounded-lg border border-cyan/20 bg-cyan/10 p-3 text-sm text-cyan">
+                  Aisle selector: B / Rack focus: B-03
+                </div>
+              </div>
+              <MiniMap />
+              <a href="#interfaces" className="inline-flex items-center justify-center gap-2 rounded-lg bg-cyan px-5 py-3 font-semibold text-ink transition hover:bg-white">
+                Enter Virtual Warehouse <ChevronRight size={18} />
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Scenario() {
+  return (
+    <section className="section-shell py-20">
+      <SectionHeading
+        kicker="Use Case"
+        title="Inspect the warehouse without walking the floor"
+        text="When WMS data does not match reality, managers can open TwinFlow and verify the physical rack state inside the digital twin."
+      />
+      <div className="grid gap-4 lg:grid-cols-5">
+        {scenario.map((item, index) => (
+          <div key={item} className="relative glass card-hover rounded-xl p-5">
+            <div className="mb-5 grid h-10 w-10 place-items-center rounded-lg bg-cyan/10 font-semibold text-cyan">{index + 1}</div>
+            <h3 className="text-lg font-semibold text-white">{item}</h3>
+            {index < scenario.length - 1 && <ArrowRight className="absolute -right-3 top-1/2 hidden text-cyan lg:block" size={22} />}
+          </div>
+        ))}
+      </div>
+      <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.045] p-6 text-center leading-8 text-slate-300">
+        A manager notices a WMS mismatch, opens TwinFlow, navigates to Rack B-03, and sees the rack is empty. The system flags a missing item and updates the worker picking app.
       </div>
     </section>
   );
@@ -314,21 +504,13 @@ function Technology() {
   return (
     <section className="border-y border-white/10 bg-white/[0.025] py-20">
       <div className="section-shell">
-        <SectionHeading kicker="Technology" title="Practical AI, built on existing infrastructure" />
-        <div className="grid gap-5 lg:grid-cols-3">
-          {tech.map((item) => (
-            <div key={item.title} className="glass card-hover rounded-xl p-7">
-              <item.icon className="text-mint" size={32} />
+        <SectionHeading kicker="Technology" title="The pipeline behind the virtual warehouse" />
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {technology.map((item) => (
+            <div key={item.title} className="glass card-hover rounded-xl p-6">
+              <item.icon className="text-mint" size={30} />
               <h3 className="mt-7 text-xl font-semibold text-white">{item.title}</h3>
               <p className="mt-3 leading-7 text-slate-300">{item.text}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {benefits.map((benefit) => (
-            <div key={benefit} className="flex items-center gap-3 rounded-lg border border-white/10 bg-ink/70 px-4 py-4">
-              <ShieldCheck size={18} className="text-cyan" />
-              <span className="text-sm font-medium text-slate-200">{benefit}</span>
             </div>
           ))}
         </div>
@@ -337,75 +519,36 @@ function Technology() {
   );
 }
 
-function ProductUI() {
+function Interfaces() {
   return (
-    <section id="product" className="section-shell py-20">
-      <SectionHeading kicker="Product" title="Built for both managers and warehouse workers" />
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <ManagerDashboard />
+    <section id="interfaces" className="section-shell py-20">
+      <SectionHeading kicker="Interfaces" title="Built for managers in control rooms and workers on the floor" />
+      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <div className="glass rounded-2xl p-5">
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-400">Manager 3D Control Room</p>
+              <h3 className="text-2xl font-semibold text-white">Navigate, inspect, and resolve anomalies</h3>
+            </div>
+            <Warehouse className="text-cyan" size={28} />
+          </div>
+          <TwinCanvas compact highlight="B-03" />
+          <div className="mt-4 grid gap-3 sm:grid-cols-4">
+            {["Navigate virtual warehouse", "Monitor rack status", "View camera-to-twin conversion", "Check anomalies"].map((item) => (
+              <div key={item} className="rounded-lg border border-white/10 bg-white/[0.05] p-3 text-sm text-slate-200">
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
         <WorkerApp />
       </div>
     </section>
   );
 }
 
-function ManagerDashboard() {
-  return (
-    <div className="glass rounded-2xl p-5">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="text-sm text-slate-400">Manager Dashboard</p>
-          <h3 className="text-2xl font-semibold text-white">Operations Control</h3>
-        </div>
-        <div className="flex gap-2">
-          {["Live", "Rack", "KPI"].map((tab) => (
-            <span key={tab} className="rounded-lg border border-white/10 bg-white/[0.05] px-3 py-2 text-xs text-slate-300">
-              {tab}
-            </span>
-          ))}
-        </div>
-      </div>
-      <div className="grid gap-4 lg:grid-cols-[1fr_0.6fr]">
-        <div className="relative min-h-[310px] overflow-hidden rounded-xl border border-cyan/20 bg-[#07111c] p-5">
-          <div className="warehouse-grid absolute inset-x-0 bottom-0 h-[260px] origin-bottom opacity-70" />
-          <div className="relative grid grid-cols-3 gap-3">
-            {["A", "B", "C", "D", "E", "F"].map((zone, index) => (
-              <div key={zone} className="rounded-lg border border-mint/30 bg-mint/10 p-3">
-                <p className="text-sm font-semibold text-mint">Zone {zone}</p>
-                <div className="mt-8 space-y-2">
-                  <div className="h-2 rounded-full bg-mint/70" />
-                  <div className={`h-2 rounded-full ${index === 3 ? "w-1/2 bg-amber" : "w-4/5 bg-cyan/60"}`} />
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="absolute right-5 top-5 rounded-lg border border-amber/30 bg-amber/10 px-3 py-2 text-xs text-amber">
-            Bottleneck: Aisle 4
-          </div>
-        </div>
-        <div className="grid gap-3">
-          {[
-            ["Rack status", "92% healthy", PackageCheck],
-            ["Bottleneck alerts", "3 active", AlertTriangle],
-            ["Space utilization", "78%", Gauge],
-            ["KPI report", "+15% pick speed", BarChart3],
-          ].map(([label, value, Icon]) => (
-            <div key={label as string} className="rounded-xl border border-white/10 bg-white/[0.045] p-4">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-slate-400">{label as string}</p>
-                <Icon className="text-cyan" size={18} />
-              </div>
-              <p className="mt-3 text-xl font-semibold text-white">{value as string}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function WorkerApp() {
-  const tasks = ["A-12 / SKU 4418", "B-03 / SKU 2041", "C-08 / SKU 8820"];
+  const tasks = ["Go to B-03", "Scan QR", "Confirm pickup", "Missing item alert"];
 
   return (
     <div className="glass rounded-2xl p-5">
@@ -414,36 +557,26 @@ function WorkerApp() {
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="text-xs text-slate-400">Worker Picking App</p>
-              <h3 className="text-xl font-semibold text-white">Today’s Tasks</h3>
+              <h3 className="text-xl font-semibold text-white">B-03 Task Update</h3>
             </div>
             <Smartphone className="text-mint" size={24} />
           </div>
           <div className="rounded-xl bg-cyan/10 p-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-cyan">
-              <MapPinned size={17} /> Shortest Route
+              <Route size={17} /> Route Guidance
             </div>
-            <p className="mt-2 text-2xl font-semibold text-white">A-12 → B-03 → C-08</p>
+            <p className="mt-2 text-2xl font-semibold text-white">Dock → B-03</p>
           </div>
           <div className="mt-4 space-y-3">
             {tasks.map((task, index) => (
-              <div key={task} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.045] p-3">
+              <div key={task} className={`flex items-center justify-between rounded-xl border p-3 ${index === 3 ? "border-red-400/30 bg-red-400/10" : "border-white/10 bg-white/[0.045]"}`}>
                 <div>
                   <p className="font-semibold text-white">{task}</p>
-                  <p className="text-xs text-slate-400">Pick {index + 1} case</p>
+                  <p className="text-xs text-slate-400">{index === 3 ? "Supervisor notified" : "TwinFlow synced"}</p>
                 </div>
-                <Check className={index === 0 ? "text-mint" : "text-slate-500"} size={18} />
+                {index === 3 ? <AlertTriangle className="text-red-300" size={18} /> : index === 1 ? <QrCode className="text-cyan" size={18} /> : <Check className="text-mint" size={18} />}
               </div>
             ))}
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-white/10 bg-white/[0.045] p-3 text-center">
-              <QrCode className="mx-auto text-cyan" size={24} />
-              <p className="mt-2 text-xs text-slate-300">QR Scan</p>
-            </div>
-            <div className="rounded-xl border border-red-400/30 bg-red-400/10 p-3 text-center">
-              <AlertTriangle className="mx-auto text-red-300" size={24} />
-              <p className="mt-2 text-xs text-red-200">Missing Item</p>
-            </div>
           </div>
         </div>
       </div>
@@ -455,8 +588,8 @@ function BusinessValue() {
   return (
     <section className="border-y border-white/10 bg-white/[0.025] py-20">
       <div className="section-shell">
-        <SectionHeading kicker="Business Value" title="Measurable warehouse efficiency" />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <SectionHeading kicker="Business Value" title="Operational gains from real-time visibility" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {metrics.map((metric) => (
             <div key={metric.label} className="glass card-hover rounded-xl p-6 text-center">
               <p className="text-4xl font-semibold text-white">{metric.value}</p>
@@ -469,81 +602,16 @@ function BusinessValue() {
   );
 }
 
-function Pricing() {
-  return (
-    <section id="pricing" className="section-shell py-20">
-      <SectionHeading kicker="Pricing" title="Scalable pricing for growing warehouses" />
-      <div className="grid gap-5 lg:grid-cols-3">
-        {prices.map((plan) => (
-          <div
-            key={plan.name}
-            className={`rounded-2xl border p-6 ${
-              plan.featured ? "border-cyan/45 bg-cyan/10 shadow-glow" : "border-white/10 bg-white/[0.045]"
-            }`}
-          >
-            <p className="text-sm text-slate-400">{plan.segment}</p>
-            <h3 className="mt-2 text-2xl font-semibold text-white">{plan.name}</h3>
-            <p className="mt-1 text-sm text-slate-300">{plan.size}</p>
-            <div className="mt-8">
-              <span className="text-4xl font-semibold text-white">{plan.price}</span>
-              {plan.price !== "Custom" && <span className="text-slate-400"> / month</span>}
-            </div>
-            <p className="mt-3 rounded-lg bg-white/[0.055] px-3 py-2 text-sm text-slate-300">{plan.setup}</p>
-            <div className="mt-7 space-y-3">
-              {plan.features.map((feature) => (
-                <div key={feature} className="flex items-center gap-3 text-sm text-slate-200">
-                  <Check size={17} className="shrink-0 text-mint" />
-                  {feature}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      <p className="mt-6 text-center text-sm text-slate-400">
-        Initial setup fee: up to 300 pyeong ₩5M, 300-1,000 pyeong ₩10M, 1,000+ pyeong custom quote.
-      </p>
-    </section>
-  );
-}
-
-function Roadmap() {
-  return (
-    <section className="section-shell py-20">
-      <SectionHeading kicker="Implementation" title="From PoC to scalable SaaS" />
-      <div className="grid gap-5 lg:grid-cols-3">
-        {roadmap.map((phase) => (
-          <div key={phase.title} className="glass card-hover rounded-xl p-6">
-            <div className="mb-6 flex items-center justify-between">
-              <span className="rounded-full bg-cyan/10 px-3 py-1 text-sm font-semibold text-cyan">{phase.step}</span>
-              <Timer className="text-mint" size={22} />
-            </div>
-            <h3 className="text-2xl font-semibold text-white">{phase.title}</h3>
-            <div className="mt-6 space-y-3">
-              {phase.items.map((item) => (
-                <div key={item} className="flex gap-3 text-sm text-slate-300">
-                  <Zap className="mt-0.5 shrink-0 text-cyan" size={16} />
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
 function FinalCTA() {
   return (
     <section id="demo" className="section-shell pb-16 pt-10">
       <div className="relative overflow-hidden rounded-2xl border border-cyan/25 bg-[linear-gradient(135deg,rgba(38,217,255,0.16),rgba(87,242,183,0.08)_42%,rgba(255,255,255,0.05))] px-6 py-16 text-center shadow-glow sm:px-12">
-        <Factory className="mx-auto mb-6 text-cyan" size={38} />
-        <h2 className="mx-auto max-w-3xl text-3xl font-semibold tracking-normal text-white sm:text-5xl">
-          Make your warehouse faster, smarter, and more visible
+        <Boxes className="mx-auto mb-6 text-cyan" size={40} />
+        <h2 className="mx-auto max-w-4xl text-3xl font-semibold tracking-normal text-white sm:text-5xl">
+          Your warehouse already has cameras. TwinFlow turns them into intelligence.
         </h2>
-        <a href="#" className="mt-9 inline-flex items-center justify-center gap-2 rounded-lg bg-cyan px-7 py-3 font-semibold text-ink transition hover:bg-white">
-          Request a Demo <ChevronRight size={18} />
+        <a href="#viewer" className="mt-9 inline-flex items-center justify-center gap-2 rounded-lg bg-cyan px-7 py-3 font-semibold text-ink transition hover:bg-white">
+          Start with a CCTV-to-Twin Demo <ChevronRight size={18} />
         </a>
       </div>
     </section>
